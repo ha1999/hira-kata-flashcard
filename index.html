@@ -31,6 +31,7 @@
       font-size: 2.2rem;
       font-weight: bold;
       border-radius: 1rem;
+      flex-direction: column;
     }
     .flip-back {
       transform: rotateY(180deg);
@@ -42,19 +43,25 @@
 
   <div class="text-center w-full max-w-md px-4 space-y-6">
 
+
     <!-- Flashcard -->
     <div id="flashcard" class="relative w-full h-48 mx-auto flip-card cursor-pointer">
       <div class="flip-inner w-full h-full bg-white shadow-lg rounded-2xl relative">
 
         <!-- Front side -->
         <div id="cardFront" class="flip-front bg-white text-gray-800 relative">
+          <div id="cardCounter"
+               class="absolute top-2 right-2 text-sm text-gray-500 bg-white bg-opacity-80 px-2 py-1 rounded hidden">
+             1 / 46
+          </div>
+
+          <span id="frontText" class="text-4xl mb-8">Press Start</span>
           <button id="speakBtn"
-            class="absolute top-2 right-2 text-xl bg-purple-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow hover:bg-purple-600 z-10"
-            onclick="event.stopPropagation(); speakCurrent();"
-            title="Speak">
+                  class="text-xl bg-purple-500 text-white rounded-full w-10 h-10 flex items-center justify-center shadow hover:bg-purple-600 hidden"
+                  onclick="event.stopPropagation(); speakCurrent();"
+                  title="Speak">
             🔊
           </button>
-          <span id="frontText">Press Start</span>
         </div>
 
         <!-- Back side -->
@@ -70,18 +77,42 @@
 
     <div id="feedback" class="text-lg font-semibold h-6"></div>
 
+    <div id="modeBox" class="space-y-2 text-left">
+      <label class="block font-semibold">Choose mode:</label>
+      <label class="inline-flex items-center gap-2 mr-4">
+        <input type="radio" name="mode" value="hira" checked>
+        Hiragana
+      </label>
+      <label class="inline-flex items-center gap-2 mr-4">
+        <input type="radio" name="mode" value="kata">
+        Katakana
+      </label>
+      <label class="inline-flex items-center gap-2">
+        <input type="radio" name="mode" value="both">
+        Both
+      </label>
+    </div>
+
+    <div class="w-full h-3 rounded-full bg-gray-200 overflow-hidden">
+      <div id="progressBar"
+           class="h-full w-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 transition-all duration-300">
+      </div>
+    </div>
     <!-- Buttons -->
     <div class="flex justify-center gap-4 flex-wrap">
       <button id="startBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
         Start
       </button>
-      <button id="backBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg hidden">
+      <button id="backBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-8 py-2 rounded-lg hidden">
         Back
       </button>
-      <button id="nextBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg hidden">
+      <button id="nextBtn" class="bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded-lg hidden">
         Next
       </button>
-      <button id="replayBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg hidden">
+      <button id="resetBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg hidden">
+        Reset Game
+      </button>
+      <button id="replayBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-2 rounded-lg hidden">
         Replay
       </button>
     </div>
@@ -129,42 +160,80 @@
 
     let shuffledArray = [];
     let index = 0;
+    let mode = 'hira';
 
     const flashcard = document.getElementById("flashcard");
     const cardFront = document.getElementById("cardFront");
     const frontText = document.getElementById("frontText");
     const cardBack = document.getElementById("cardBack");
     const startBtn = document.getElementById("startBtn");
+    const modeBox = document.getElementById("modeBox");
     const nextBtn = document.getElementById("nextBtn");
+    const resetBtn = document.getElementById("resetBtn");
     const backBtn = document.getElementById("backBtn");
     const replayBtn = document.getElementById("replayBtn");
     const romajiInput = document.getElementById("romajiInput");
     const feedback = document.getElementById("feedback");
+    const cardCounter = document.getElementById('cardCounter');
+    const progressBar = document.getElementById('progressBar')
+    const speakBtn = document.getElementById('speakBtn');
 
     flashcard.addEventListener("click", () => {
       flashcard.classList.toggle("flipped");
     });
 
     function startFlashcards() {
+      const selected = document.querySelector('input[name="mode"]:checked');
+      mode = selected ? selected.value : 'hira';
       shuffledArray = [...romaji].sort(() => Math.random() - 0.5);
-      index = 0;
+      index = 1;
       showCard();
       startBtn.classList.add("hidden");
       nextBtn.classList.remove("hidden");
       backBtn.classList.remove("hidden");
-      replayBtn.classList.add("hidden");
+      resetBtn.classList.remove("hidden");
       romajiInput.classList.remove("hidden");
     }
 
     function showCard() {
       const current = shuffledArray[index];
-      frontText.textContent = `${hiraganaMap[current]} / ${katakanaMap[current]}`;
-      cardBack.textContent = `${current}`;
+
+      let text = '';
+      if (mode === 'hira') {
+        text = hiraganaMap[current];
+      } else if (mode === 'kata') {
+        text = katakanaMap[current];
+      } else {
+        text = `${hiraganaMap[current]} / ${katakanaMap[current]}`;
+      }
+
+      frontText.textContent = text;
+      cardBack.textContent = current;
       romajiInput.value = "";
       feedback.textContent = "";
       flashcard.classList.remove("flipped");
       romajiInput.focus();
+
+      // 👇 Show speak button only after the first card
+      const speakBtn = document.getElementById("speakBtn");
+      if (index === 0 || index >= romaji.length - 1) {
+        speakBtn.classList.add("hidden");
+        cardCounter.classList.add("hidden");
+        resetBtn.classList.remove("hidden");
+      } else {
+        speakBtn.classList.remove("hidden");
+        cardCounter.classList.remove("hidden");
+      }
+
+      if (index > 0) {
+        modeBox.classList.add("hidden");
+      }
+
+      cardCounter.textContent = `Card ${index} of ${shuffledArray.length}`;
+      const percent = ((index + 1) / shuffledArray.length) * 100;
+      progressBar.style.width = `${percent}%`;
     }
+
 
     function checkAnswer() {
       const current = shuffledArray[index];
@@ -214,7 +283,13 @@
       const current = shuffledArray[index];
       if (!current) return;
 
-      const text = `${hiraganaMap[current]}、${katakanaMap[current]}`;
+      let text = '';
+      if (mode === 'hira') {
+        text = hiraganaMap[current];
+      } else {
+        text = `${katakanaMap[current]}`;
+      }
+
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'ja-JP';
       const voices = speechSynthesis.getVoices();
@@ -223,6 +298,30 @@
       speechSynthesis.cancel();
       speechSynthesis.speak(utterance);
     }
+
+    resetBtn.addEventListener("click", () => {
+      index = 0;
+      shuffledArray = [];
+      flashcard.classList.remove("flipped");
+      frontText.textContent = "Press Start";
+      cardBack.textContent = "-";
+      romajiInput.value = "";
+      romajiInput.classList.add("hidden");
+      feedback.textContent = "";
+      progressBar.style.width = "0%";
+      speakBtn.classList.add("hidden");
+      document.getElementById('cardCounter').textContent = `Card 0 of 0`;
+
+      // Show start again, hide all others
+      startBtn.classList.remove("hidden");
+      nextBtn.classList.add("hidden");
+      backBtn.classList.add("hidden");
+      resetBtn.classList.add("hidden");
+      replayBtn.classList.add("hidden");
+      cardCounter.classList.add("hidden");
+      modeBox.classList.remove("hidden");
+    });
+
 
     window.speechSynthesis.onvoiceschanged = () => {
       speechSynthesis.getVoices();
