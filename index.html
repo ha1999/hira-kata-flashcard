@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Japanese Flashcards</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .flip-card {
+      perspective: 1000px;
+    }
+    .flip-inner {
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+    .flipped .flip-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-front,
+    .flip-back {
+      backface-visibility: hidden;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-weight: bold;
+      border-radius: 1rem;
+    }
+    .flip-back {
+      transform: rotateY(180deg);
+      background-color: #fef3c7;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100">
+
+  <div class="text-center w-full max-w-md px-4 space-y-6">
+
+    <!-- Flashcard -->
+    <div id="flashcard" class="relative w-full h-48 mx-auto flip-card cursor-pointer">
+      <div class="flip-inner w-full h-full bg-white shadow-lg rounded-2xl relative">
+
+        <!-- Front side -->
+        <div id="cardFront" class="flip-front bg-white text-gray-800 relative">
+          <button id="speakBtn"
+            class="absolute top-2 right-2 text-xl bg-purple-500 text-white rounded-full w-9 h-9 flex items-center justify-center shadow hover:bg-purple-600 z-10"
+            onclick="event.stopPropagation(); speakCurrent();"
+            title="Speak">
+            🔊
+          </button>
+          <span id="frontText">Press Start</span>
+        </div>
+
+        <!-- Back side -->
+        <div id="cardBack" class="flip-back text-gray-900">
+          -
+        </div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <input id="romajiInput" type="text" placeholder="Type Romaji (e.g. ka)"
+      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-xl hidden" />
+
+    <div id="feedback" class="text-lg font-semibold h-6"></div>
+
+    <!-- Buttons -->
+    <div class="flex justify-center gap-4 flex-wrap">
+      <button id="startBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+        Start
+      </button>
+      <button id="backBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg hidden">
+        Back
+      </button>
+      <button id="nextBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg hidden">
+        Next
+      </button>
+      <button id="replayBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg hidden">
+        Replay
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const romaji = [
+      'a', 'i', 'u', 'e', 'o',
+      'ka', 'ki', 'ku', 'ke', 'ko',
+      'sa', 'shi', 'su', 'se', 'so',
+      'ta', 'chi', 'tsu', 'te', 'to',
+      'na', 'ni', 'nu', 'ne', 'no',
+      'ha', 'hi', 'fu', 'he', 'ho',
+      'ma', 'mi', 'mu', 'me', 'mo',
+      'ya', 'yu', 'yo',
+      'ra', 'ri', 'ru', 're', 'ro',
+      'wa', 'wo', 'n'
+    ];
+
+    const hiraganaMap = {
+      a: 'あ', i: 'い', u: 'う', e: 'え', o: 'お',
+      ka: 'か', ki: 'き', ku: 'く', ke: 'け', ko: 'こ',
+      sa: 'さ', shi: 'し', su: 'す', se: 'せ', so: 'そ',
+      ta: 'た', chi: 'ち', tsu: 'つ', te: 'て', to: 'と',
+      na: 'な', ni: 'に', nu: 'ぬ', ne: 'ね', no: 'の',
+      ha: 'は', hi: 'ひ', fu: 'ふ', he: 'へ', ho: 'ほ',
+      ma: 'ま', mi: 'み', mu: 'む', me: 'め', mo: 'も',
+      ya: 'や', yu: 'ゆ', yo: 'よ',
+      ra: 'ら', ri: 'り', ru: 'る', re: 'れ', ro: 'ろ',
+      wa: 'わ', wo: 'を', n: 'ん'
+    };
+
+    const katakanaMap = {
+      a: 'ア', i: 'イ', u: 'ウ', e: 'エ', o: 'オ',
+      ka: 'カ', ki: 'キ', ku: 'ク', ke: 'ケ', ko: 'コ',
+      sa: 'サ', shi: 'シ', su: 'ス', se: 'セ', so: 'ソ',
+      ta: 'タ', chi: 'チ', tsu: 'ツ', te: 'テ', to: 'ト',
+      na: 'ナ', ni: 'ニ', nu: 'ヌ', ne: 'ネ', no: 'ノ',
+      ha: 'ハ', hi: 'ヒ', fu: 'フ', he: 'ヘ', ho: 'ホ',
+      ma: 'マ', mi: 'ミ', mu: 'ム', me: 'メ', mo: 'モ',
+      ya: 'ヤ', yu: 'ユ', yo: 'ヨ',
+      ra: 'ラ', ri: 'リ', ru: 'ル', re: 'レ', ro: 'ロ',
+      wa: 'ワ', wo: 'ヲ', n: 'ン'
+    };
+
+    let shuffledArray = [];
+    let index = 0;
+
+    const flashcard = document.getElementById("flashcard");
+    const cardFront = document.getElementById("cardFront");
+    const frontText = document.getElementById("frontText");
+    const cardBack = document.getElementById("cardBack");
+    const startBtn = document.getElementById("startBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const backBtn = document.getElementById("backBtn");
+    const replayBtn = document.getElementById("replayBtn");
+    const romajiInput = document.getElementById("romajiInput");
+    const feedback = document.getElementById("feedback");
+
+    flashcard.addEventListener("click", () => {
+      flashcard.classList.toggle("flipped");
+    });
+
+    function startFlashcards() {
+      shuffledArray = [...romaji].sort(() => Math.random() - 0.5);
+      index = 0;
+      showCard();
+      startBtn.classList.add("hidden");
+      nextBtn.classList.remove("hidden");
+      backBtn.classList.remove("hidden");
+      replayBtn.classList.add("hidden");
+      romajiInput.classList.remove("hidden");
+    }
+
+    function showCard() {
+      const current = shuffledArray[index];
+      frontText.textContent = `${hiraganaMap[current]} / ${katakanaMap[current]}`;
+      cardBack.textContent = `${current}`;
+      romajiInput.value = "";
+      feedback.textContent = "";
+      flashcard.classList.remove("flipped");
+      romajiInput.focus();
+    }
+
+    function checkAnswer() {
+      const current = shuffledArray[index];
+      const userInput = romajiInput.value.trim().toLowerCase();
+      const isCorrect = userInput === current;
+
+      if (!isCorrect) {
+        feedback.textContent = `❌ Correct answer is: ${current}`;
+        feedback.className = "text-red-600 font-bold";
+      } else {
+        feedback.textContent = "";
+      }
+
+      return isCorrect;
+    }
+
+    nextBtn.addEventListener("click", () => {
+      if (checkAnswer()) {
+        if (index < shuffledArray.length - 1) {
+          index++;
+          showCard();
+        } else {
+          frontText.textContent = "🎉 Done!";
+          cardBack.textContent = "👏";
+          nextBtn.disabled = true;
+          replayBtn.classList.remove("hidden");
+          romajiInput.classList.add("hidden");
+        }
+      }
+    });
+
+    backBtn.addEventListener("click", () => {
+      if (index > 0) {
+        index--;
+        showCard();
+      }
+    });
+
+    replayBtn.addEventListener("click", startFlashcards);
+    startBtn.addEventListener("click", startFlashcards);
+
+    romajiInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") nextBtn.click();
+    });
+
+    function speakCurrent() {
+      const current = shuffledArray[index];
+      if (!current) return;
+
+      const text = `${hiraganaMap[current]}、${katakanaMap[current]}`;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ja-JP';
+      const voices = speechSynthesis.getVoices();
+      const jp = voices.find(v => v.lang === 'ja-JP');
+      if (jp) utterance.voice = jp;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+    }
+
+    window.speechSynthesis.onvoiceschanged = () => {
+      speechSynthesis.getVoices();
+    };
+  </script>
+</body>
+</html>
