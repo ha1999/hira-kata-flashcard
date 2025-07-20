@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Japanese Flashcards</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <meta name="theme-color" content="#6366f1" />
   <style>
     .flip-card {
       perspective: 1000px;
@@ -224,6 +227,12 @@
     window.speechSynthesis.onvoiceschanged = () => {
       speechSynthesis.getVoices();
     };
+    
+    if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+      .then(reg => console.log("✅ Service Worker registered"))
+      .catch(err => console.error("❌ SW registration failed:", err));
+  }
   </script>
 </body>
 </html>
