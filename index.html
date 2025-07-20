@@ -81,7 +81,6 @@
               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg flex items-center gap-2 hidden">
         🎤 Speak
       </button>
-      <div id="speechResult" class="text-xl font-medium text-gray-800"></div>
     </div>
 
     </div>
@@ -376,7 +375,7 @@
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       recognition = new SpeechRecognition();
-      recognition.lang = 'en-US';
+      recognition.lang = 'ja-JP';
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
 
@@ -396,9 +395,7 @@
       };
 
       recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.trim().toLowerCase();
-        document.getElementById("speechResult").textContent = transcript;
-        romajiInput.value = transcript
+        romajiInput.value = event.results[0][0].transcript.trim().toLowerCase();
         nextBtn.click()
       };
     } else {
