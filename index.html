@@ -265,6 +265,7 @@
 
     nextBtn.addEventListener("click", () => {
       if (checkAnswer()) {
+        speakBtn.click()
         if (index < shuffledArray.length - 1) {
           index++;
           showCard();
@@ -386,7 +387,7 @@
 
       recognition.onend = () => {
         isRecognizing = false;
-        micBtn.textContent = "🎤 Speak";
+        micBtn.textContent = "🎤";
       };
 
       recognition.onerror = (event) => {
@@ -397,7 +398,8 @@
       recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript.trim().toLowerCase();
         document.getElementById("speechResult").textContent = transcript;
-        validateSpokenAnswer(transcript);
+        romajiInput.value = transcript
+        nextBtn.click()
       };
     } else {
       micBtn.disabled = true;
