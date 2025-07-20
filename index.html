@@ -1,175 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Japanese Flashcards</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="favicon_io/android-chrome-192x192.png" />
-  <meta name="theme-color" content="#6366f1" />
-  <style>
-    .flip-card {
-      perspective: 1000px;
-    }
-    .flip-inner {
-      transform-style: preserve-3d;
-      transition: transform 0.6s;
-    }
-    .flipped .flip-inner {
-      transform: rotateY(180deg);
-    }
-    .flip-front,
-    .flip-back {
-      backface-visibility: hidden;
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.2rem;
-      font-weight: bold;
-      border-radius: 1rem;
-      flex-direction: column;
-    }
-    .flip-back {
-      transform: rotateY(180deg);
-      background-color: #fef3c7;
-    }
-  </style>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Japanese Flashcards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="manifest.json" rel="manifest"/>
+    <link href="favicon_io/android-chrome-192x192.png" rel="icon"/>
+    <meta content="#6366f1" name="theme-color"/>
+    <style>
+        .flip-card {
+            perspective: 1000px;
+        }
+
+        .flip-inner {
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .flipped .flip-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-front,
+        .flip-back {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            font-weight: bold;
+            border-radius: 1rem;
+            flex-direction: column;
+        }
+
+        .flip-back {
+            transform: rotateY(180deg);
+            background-color: #fef3c7;
+        }
+    </style>
 </head>
 <body class="flex items-center justify-center min-h-screen bg-gray-100">
 
-  <div class="text-center w-full max-w-md px-4 space-y-6">
+<div class="text-center w-full max-w-md px-4 space-y-6">
 
 
     <!-- Flashcard -->
-    <div id="flashcard" class="relative w-full h-48 mx-auto flip-card cursor-pointer">
-      <div class="flip-inner w-full h-full bg-white shadow-lg rounded-2xl relative">
+    <div class="relative w-full h-48 mx-auto flip-card cursor-pointer" id="flashcard">
+        <div class="flip-inner w-full h-full bg-white shadow-lg rounded-2xl relative">
 
-        <!-- Front side -->
-        <div id="cardFront" class="flip-front bg-white text-gray-800 relative">
-          <div id="cardCounter"
-               class="absolute top-2 right-2 text-sm text-gray-500 bg-white bg-opacity-80 px-2 py-1 rounded hidden">
-             1 / 46
-          </div>
+            <!-- Front side -->
+            <div class="flip-front bg-white text-gray-800 relative" id="cardFront">
+                <div class="absolute top-2 right-2 text-sm text-gray-500 bg-white bg-opacity-80 px-2 py-1 rounded hidden"
+                     id="cardCounter">
+                    1 / 46
+                </div>
 
-          <span id="frontText" class="text-4xl mb-8">Press Start</span>
-          <button id="speakBtn"
-                  class="text-xl bg-purple-500 text-white rounded-full w-10 h-10 flex items-center justify-center shadow hover:bg-purple-600 hidden"
-                  onclick="event.stopPropagation(); speakCurrent();"
-                  title="Speak">
-            🔊
-          </button>
+                <span class="text-3xl mb-2" id="frontText">Japanese Character Flashcards</span>
+                <img alt="japan flag" class="absolute top-2 left-2" src="/favicon_io/favicon-32x32.png">
+                <button class="text-xl bg-purple-500 text-white rounded-full w-10 h-10 flex items-center justify-center shadow hover:bg-purple-600 hidden"
+                        id="speakBtn"
+                        onclick="event.stopPropagation(); speakCurrent();"
+                        title="Speak">
+                    🔊
+                </button>
+            </div>
+
+            <!-- Backside -->
+            <div class="flip-back text-gray-900" id="cardBack">
+                -
+            </div>
         </div>
-
-        <!-- Back side -->
-        <div id="cardBack" class="flip-back text-gray-900">
-          -
-        </div>
-      </div>
     </div>
 
     <!-- Input -->
     <div class="flex justify-between">
-    <input id="romajiInput" type="text" placeholder="Type Romaji (e.g. ka)"
-      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-xl mr-2 hidden" />
+        <input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-xl mr-2 hidden"
+               id="romajiInput" placeholder="Type Romaji (e.g. ka)"
+               type="text"/>
 
-    <div class="flex items-center justify-center">
-      <button id="micBtn"
-              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg flex items-center gap-2 hidden">
-        🎤 Speak
-      </button>
+        <div class="flex items-center justify-center">
+            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg flex items-center gap-2 hidden"
+                    id="micBtn">
+                🎤
+            </button>
+        </div>
+
     </div>
 
-    </div>
+    <div class="text-lg font-semibold h-6" id="feedback"></div>
 
-    <div id="feedback" class="text-lg font-semibold h-6"></div>
-
-    <div id="modeBox" class="space-y-2 text-left">
-      <label class="block font-semibold">Choose mode:</label>
-      <label class="inline-flex items-center gap-2 mr-4">
-        <input type="radio" name="mode" value="hira" checked>
-        Hiragana
-      </label>
-      <label class="inline-flex items-center gap-2 mr-4">
-        <input type="radio" name="mode" value="kata">
-        Katakana
-      </label>
-      <label class="inline-flex items-center gap-2">
-        <input type="radio" name="mode" value="both">
-        Both
-      </label>
+    <div class="space-y-2 text-left" id="modeBox">
+        <label class="block font-semibold">Choose mode:</label>
+        <label class="inline-flex items-center gap-2 mr-4">
+            <input checked name="mode" type="radio" value="hira">
+            Hiragana
+        </label>
+        <label class="inline-flex items-center gap-2 mr-4">
+            <input name="mode" type="radio" value="kata">
+            Katakana
+        </label>
+        <label class="inline-flex items-center gap-2">
+            <input name="mode" type="radio" value="both">
+            Both
+        </label>
     </div>
 
     <div class="w-full h-3 rounded-full bg-gray-200 overflow-hidden">
-      <div id="progressBar"
-           class="h-full w-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 transition-all duration-300">
-      </div>
+        <div class="h-full w-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 transition-all duration-300"
+             id="progressBar">
+        </div>
     </div>
     <!-- Buttons -->
     <div class="flex justify-center gap-4 flex-wrap">
-      <button id="startBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
-        Start
-      </button>
-      <button id="backBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-8 py-2 rounded-lg hidden">
-        Back
-      </button>
-      <button id="nextBtn" class="bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded-lg hidden">
-        Next
-      </button>
-      <button id="resetBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg hidden">
-        Reset Game
-      </button>
-      <button id="replayBtn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-2 rounded-lg hidden">
-        Replay
-      </button>
+        <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg" id="startBtn">
+            Start
+        </button>
+        <button class="bg-gray-500 hover:bg-gray-600 text-white px-8 py-2 rounded-lg hidden" id="backBtn">
+            Back
+        </button>
+        <button class="bg-green-500 hover:bg-green-600 text-white px-8 py-2 rounded-lg hidden" id="nextBtn">
+            Next
+        </button>
+        <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg hidden" id="resetBtn">
+            Reset Game
+        </button>
+        <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-8 py-2 rounded-lg hidden" id="replayBtn">
+            Replay
+        </button>
     </div>
-  </div>
+</div>
 
-  <script>
+<script>
     const romaji = [
-      'a', 'i', 'u', 'e', 'o',
-      'ka', 'ki', 'ku', 'ke', 'ko',
-      'sa', 'shi', 'su', 'se', 'so',
-      'ta', 'chi', 'tsu', 'te', 'to',
-      'na', 'ni', 'nu', 'ne', 'no',
-      'ha', 'hi', 'fu', 'he', 'ho',
-      'ma', 'mi', 'mu', 'me', 'mo',
-      'ya', 'yu', 'yo',
-      'ra', 'ri', 'ru', 're', 'ro',
-      'wa', 'wo', 'n'
+        'a', 'i', 'u', 'e', 'o',
+        'ka', 'ki', 'ku', 'ke', 'ko',
+        'sa', 'shi', 'su', 'se', 'so',
+        'ta', 'chi', 'tsu', 'te', 'to',
+        'na', 'ni', 'nu', 'ne', 'no',
+        'ha', 'hi', 'fu', 'he', 'ho',
+        'ma', 'mi', 'mu', 'me', 'mo',
+        'ya', 'yu', 'yo',
+        'ra', 'ri', 'ru', 're', 'ro',
+        'wa', 'wo', 'n'
     ];
 
     const hiraganaMap = {
-      a: 'あ', i: 'い', u: 'う', e: 'え', o: 'お',
-      ka: 'か', ki: 'き', ku: 'く', ke: 'け', ko: 'こ',
-      sa: 'さ', shi: 'し', su: 'す', se: 'せ', so: 'そ',
-      ta: 'た', chi: 'ち', tsu: 'つ', te: 'て', to: 'と',
-      na: 'な', ni: 'に', nu: 'ぬ', ne: 'ね', no: 'の',
-      ha: 'は', hi: 'ひ', fu: 'ふ', he: 'へ', ho: 'ほ',
-      ma: 'ま', mi: 'み', mu: 'む', me: 'め', mo: 'も',
-      ya: 'や', yu: 'ゆ', yo: 'よ',
-      ra: 'ら', ri: 'り', ru: 'る', re: 'れ', ro: 'ろ',
-      wa: 'わ', wo: 'を', n: 'ん'
+        a: 'あ', i: 'い', u: 'う', e: 'え', o: 'お',
+        ka: 'か', ki: 'き', ku: 'く', ke: 'け', ko: 'こ',
+        sa: 'さ', shi: 'し', su: 'す', se: 'せ', so: 'そ',
+        ta: 'た', chi: 'ち', tsu: 'つ', te: 'て', to: 'と',
+        na: 'な', ni: 'に', nu: 'ぬ', ne: 'ね', no: 'の',
+        ha: 'は', hi: 'ひ', fu: 'ふ', he: 'へ', ho: 'ほ',
+        ma: 'ま', mi: 'み', mu: 'む', me: 'め', mo: 'も',
+        ya: 'や', yu: 'ゆ', yo: 'よ',
+        ra: 'ら', ri: 'り', ru: 'る', re: 'れ', ro: 'ろ',
+        wa: 'わ', wo: 'を', n: 'ん'
     };
 
     const katakanaMap = {
-      a: 'ア', i: 'イ', u: 'ウ', e: 'エ', o: 'オ',
-      ka: 'カ', ki: 'キ', ku: 'ク', ke: 'ケ', ko: 'コ',
-      sa: 'サ', shi: 'シ', su: 'ス', se: 'セ', so: 'ソ',
-      ta: 'タ', chi: 'チ', tsu: 'ツ', te: 'テ', to: 'ト',
-      na: 'ナ', ni: 'ニ', nu: 'ヌ', ne: 'ネ', no: 'ノ',
-      ha: 'ハ', hi: 'ヒ', fu: 'フ', he: 'ヘ', ho: 'ホ',
-      ma: 'マ', mi: 'ミ', mu: 'ム', me: 'メ', mo: 'モ',
-      ya: 'ヤ', yu: 'ユ', yo: 'ヨ',
-      ra: 'ラ', ri: 'リ', ru: 'ル', re: 'レ', ro: 'ロ',
-      wa: 'ワ', wo: 'ヲ', n: 'ン'
+        a: 'ア', i: 'イ', u: 'ウ', e: 'エ', o: 'オ',
+        ka: 'カ', ki: 'キ', ku: 'ク', ke: 'ケ', ko: 'コ',
+        sa: 'サ', shi: 'シ', su: 'ス', se: 'セ', so: 'ソ',
+        ta: 'タ', chi: 'チ', tsu: 'ツ', te: 'テ', to: 'ト',
+        na: 'ナ', ni: 'ニ', nu: 'ヌ', ne: 'ネ', no: 'ノ',
+        ha: 'ハ', hi: 'ヒ', fu: 'フ', he: 'ヘ', ho: 'ホ',
+        ma: 'マ', mi: 'ミ', mu: 'ム', me: 'メ', mo: 'モ',
+        ya: 'ヤ', yu: 'ユ', yo: 'ヨ',
+        ra: 'ラ', ri: 'リ', ru: 'ル', re: 'レ', ro: 'ロ',
+        wa: 'ワ', wo: 'ヲ', n: 'ン'
     };
 
     let shuffledArray = [];
-    let index = 0;
+    let index = -1;
     let mode = 'hira';
 
     const flashcard = document.getElementById("flashcard");
@@ -190,231 +198,243 @@
 
 
     flashcard.addEventListener("click", () => {
-      flashcard.classList.toggle("flipped");
+        if (index < 1 || index >= romaji.length - 1) return
+        flashcard.classList.toggle("flipped");
+        speakBtn.click()
     });
 
     function startFlashcards() {
-      const selected = document.querySelector('input[name="mode"]:checked');
-      mode = selected ? selected.value : 'hira';
-      shuffledArray = [...romaji].sort(() => Math.random() - 0.5);
-      index = 1;
-      showCard();
-      startBtn.classList.add("hidden");
-      nextBtn.classList.remove("hidden");
-      backBtn.classList.remove("hidden");
-      resetBtn.classList.remove("hidden");
-      romajiInput.classList.remove("hidden");
+        const selected = document.querySelector('input[name="mode"]:checked');
+        mode = selected ? selected.value : 'hira';
+        shuffledArray = [...romaji].sort(() => Math.random() - 0.5);
+        index++;
+        showCard();
+        startBtn.classList.add("hidden");
+        nextBtn.classList.remove("hidden");
+        backBtn.classList.remove("hidden");
+        resetBtn.classList.remove("hidden");
+        romajiInput.classList.remove("hidden");
     }
 
     function showCard() {
-      const current = shuffledArray[index];
+        const current = shuffledArray[index];
 
-      let text = '';
-      if (mode === 'hira') {
-        text = hiraganaMap[current];
-      } else if (mode === 'kata') {
-        text = katakanaMap[current];
-      } else {
-        text = `${hiraganaMap[current]} / ${katakanaMap[current]}`;
-      }
+        let text = '';
+        if (mode === 'hira') {
+            text = hiraganaMap[current];
+        } else if (mode === 'kata') {
+            text = katakanaMap[current];
+        } else {
+            text = `${hiraganaMap[current]} / ${katakanaMap[current]}`;
+        }
 
-      frontText.textContent = text;
-      cardBack.textContent = current;
-      romajiInput.value = "";
-      feedback.textContent = "";
-      flashcard.classList.remove("flipped");
-      romajiInput.focus();
+        frontText.textContent = text;
+        cardBack.textContent = current;
+        romajiInput.value = "";
+        feedback.textContent = "";
+        flashcard.classList.remove("flipped");
+        romajiInput.focus();
 
-      // 👇 Show speak button only after the first card
-      const speakBtn = document.getElementById("speakBtn");
-      if (index === 0 || index >= romaji.length - 1) {
-        speakBtn.classList.add("hidden");
-        cardCounter.classList.add("hidden");
-        resetBtn.classList.remove("hidden");
-      } else {
-        speakBtn.classList.remove("hidden");
-        cardCounter.classList.remove("hidden");
-        micBtn.classList.remove("hidden");
-      }
+        // 👇 Show speak button only after the first card
+        const speakBtn = document.getElementById("speakBtn");
+        if (index < 0 || index >= romaji.length) {
+            speakBtn.classList.add("hidden");
+            cardCounter.classList.add("hidden");
+            resetBtn.classList.remove("hidden");
+        } else {
+            speakBtn.classList.remove("hidden");
+            cardCounter.classList.remove("hidden");
+            micBtn.classList.remove("hidden");
+        }
 
-      if (index > 0) {
-        modeBox.classList.add("hidden");
-      }
+        if (index > -1) {
+            modeBox.classList.add("hidden");
+        }
 
-      cardCounter.textContent = `Card ${index} of ${shuffledArray.length}`;
-      const percent = ((index + 1) / shuffledArray.length) * 100;
-      progressBar.style.width = `${percent}%`;
+        cardCounter.textContent = `${index + 1} / ${shuffledArray.length}`;
+        const percent = ((index + 1) / shuffledArray.length) * 100;
+        progressBar.style.width = `${percent}%`;
     }
 
 
     function checkAnswer() {
-      const current = shuffledArray[index];
-      const userInput = romajiInput.value.trim().toLowerCase();
-      const isCorrect = userInput === current;
+        const current = shuffledArray[index];
+        const userInput = romajiInput.value.trim().toLowerCase();
+        const isCorrect = userInput === current;
 
-      if (!isCorrect) {
-        feedback.textContent = `❌ Correct answer is: ${current}`;
-        feedback.className = "text-red-600 font-bold";
-      } else {
-        feedback.textContent = "";
-      }
+        if (!isCorrect) {
+            feedback.textContent = `❌ Correct answer is: ${current}`;
+            feedback.className = "text-red-600 font-bold";
+        } else {
+            feedback.textContent = "";
+        }
 
-      return isCorrect;
+        return isCorrect;
     }
 
     nextBtn.addEventListener("click", () => {
-      if (checkAnswer()) {
-        speakBtn.click()
-        if (index < shuffledArray.length - 1) {
-          index++;
-          showCard();
-        } else {
-          frontText.textContent = "🎉 Done!";
-          cardBack.textContent = "👏";
-          nextBtn.disabled = true;
-          replayBtn.classList.remove("hidden");
-          romajiInput.classList.add("hidden");
+        if (checkAnswer()) {
+            speakBtn.click()
+            if (index < shuffledArray.length - 1) {
+                index++;
+                showCard();
+            } else {
+                frontText.textContent = "🎉 Done!";
+                cardBack.textContent = "👏";
+                nextBtn.disabled = true;
+                replayBtn.classList.remove("hidden");
+                romajiInput.classList.add("hidden");
+                cardCounter.classList.add("hidden");
+                nextBtn.classList.add("hidden");
+                backBtn.classList.add("hidden");
+                micBtn.classList.add("hidden");
+                resetBtn.classList.add("hidden");
+            }
         }
-      }
     });
 
     backBtn.addEventListener("click", () => {
-      if (index > 0) {
-        index--;
-        showCard();
-      }
+        if (index > 0) {
+            romajiInput.classList.remove("hidden");
+            index--;
+            showCard();
+        }
     });
 
-    replayBtn.addEventListener("click", startFlashcards);
+    replayBtn.addEventListener("click", resetGame);
     startBtn.addEventListener("click", startFlashcards);
 
     romajiInput.addEventListener("keydown", e => {
-      if (e.key === "Enter") nextBtn.click();
+        if (e.key === "Enter") nextBtn.click();
     });
 
     function speakCurrent() {
-      const current = shuffledArray[index];
-      if (!current) return;
+        const current = shuffledArray[index];
+        if (!current) return;
 
-      let text = '';
-      if (mode === 'hira') {
-        text = hiraganaMap[current];
-      } else {
-        text = `${katakanaMap[current]}`;
-      }
+        let text = '';
+        if (mode === 'hira') {
+            text = hiraganaMap[current];
+        } else {
+            text = `${katakanaMap[current]}`;
+        }
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ja-JP';
-      const voices = speechSynthesis.getVoices();
-      const jp = voices.find(v => v.lang === 'ja-JP');
-      if (jp) utterance.voice = jp;
-      speechSynthesis.cancel();
-      speechSynthesis.speak(utterance);
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ja-JP';
+        const voices = speechSynthesis.getVoices();
+        const jp = voices.find(v => v.lang === 'ja-JP');
+        if (jp) utterance.voice = jp;
+        speechSynthesis.cancel();
+        speechSynthesis.speak(utterance);
     }
 
-    resetBtn.addEventListener("click", () => {
-      index = 0;
-      shuffledArray = [];
-      flashcard.classList.remove("flipped");
-      frontText.textContent = "Press Start";
-      cardBack.textContent = "-";
-      romajiInput.value = "";
-      romajiInput.classList.add("hidden");
-      feedback.textContent = "";
-      progressBar.style.width = "0%";
-      speakBtn.classList.add("hidden");
-      document.getElementById('cardCounter').textContent = `Card 0 of 0`;
+    function resetGame() {
+        index = -1;
+        shuffledArray = [];
+        flashcard.classList.remove("flipped");
+        frontText.textContent = "Japanese Character Flashcards";
+        cardBack.textContent = "-";
+        romajiInput.value = "";
+        romajiInput.classList.add("hidden");
+        feedback.textContent = "";
+        progressBar.style.width = "0%";
+        speakBtn.classList.add("hidden");
+        document.getElementById('cardCounter').textContent = ``;
 
-      // Show start again, hide all others
-      startBtn.classList.remove("hidden");
-      nextBtn.classList.add("hidden");
-      backBtn.classList.add("hidden");
-      resetBtn.classList.add("hidden");
-      replayBtn.classList.add("hidden");
-      cardCounter.classList.add("hidden");
-      modeBox.classList.remove("hidden");
-    });
+        // Show start again, hide all others
+        startBtn.classList.remove("hidden");
+        nextBtn.classList.add("hidden");
+        backBtn.classList.add("hidden");
+        resetBtn.classList.add("hidden");
+        replayBtn.classList.add("hidden");
+        cardCounter.classList.add("hidden");
+        modeBox.classList.remove("hidden");
+        micBtn.classList.add("hidden");
+    }
 
+    resetBtn.addEventListener("click", resetGame);
 
 
     // speech recognize setting permission
     function validateSpokenAnswer(userInput) {
-      const current = shuffledArray[index];
-      const isCorrect = userInput === current;
+        const current = shuffledArray[index];
+        const isCorrect = userInput === current || userInput === hiraganaMap[current] || userInput === katakanaMap[current];
 
-      if (isCorrect) {
-        feedback.textContent = "✅ Correct!";
-        feedback.className = "text-green-600 font-bold";
-        setTimeout(() => {
-          if (index < shuffledArray.length - 1) {
-            index++;
-            showCard();
-          } else {
-            frontText.textContent = "🎉 Done!";
-            cardBack.textContent = "👏";
-            nextBtn.disabled = true;
-            replayBtn.classList.remove("hidden");
-            micBtn.classList.add("hidden");
-          }
-        }, 600);
-      } else {
-        feedback.textContent = `❌ Incorrect! Expected: ${current}`;
-        feedback.className = "text-red-600 font-bold";
-      }
+        if (isCorrect) {
+            speakBtn.click()
+            feedback.textContent = "✅ Correct!";
+            feedback.className = "text-green-600 font-bold";
+            setTimeout(() => {
+                if (index < shuffledArray.length - 1) {
+                    index++;
+                    showCard();
+                } else {
+                    frontText.textContent = "🎉 Done!";
+                    cardBack.textContent = "👏";
+                    nextBtn.disabled = true;
+                    replayBtn.classList.remove("hidden");
+                    micBtn.classList.add("hidden");
+                }
+            }, 2000);
+        } else {
+            feedback.textContent = `❌ Incorrect! Expected: ${current}`;
+            feedback.className = "text-red-600 font-bold";
+        }
     }
 
     micBtn.addEventListener("click", () => {
-      if (recognition && !isRecognizing) {
-        recognition.start();
-      }
+        if (recognition && !isRecognizing) {
+            recognition.start();
+        }
     });
     let recognition;
     let isRecognizing = false;
 
     // Setup Web Speech API
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.lang = 'ja-JP';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'ja-JP';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
 
-      recognition.onstart = () => {
-        isRecognizing = true;
-        micBtn.textContent = "🎙️ Listening...";
-      };
+        recognition.onstart = () => {
+            isRecognizing = true;
+            micBtn.textContent = "🎙️ Listening...";
+        };
 
-      recognition.onend = () => {
-        isRecognizing = false;
-        micBtn.textContent = "🎤";
-      };
+        recognition.onend = () => {
+            isRecognizing = false;
+            micBtn.textContent = "🎤";
+        };
 
-      recognition.onerror = (event) => {
-        feedback.textContent = "❌ Speech error: " + event.error;
-        feedback.className = "text-red-600 font-bold";
-      };
+        recognition.onerror = (event) => {
+            feedback.textContent = "❌ Speech error: " + event.error;
+            feedback.className = "text-red-600 font-bold";
+        };
 
-      recognition.onresult = (event) => {
-        romajiInput.value = event.results[0][0].transcript.trim().toLowerCase();
-        nextBtn.click()
-      };
+        recognition.onresult = (event) => {
+            const textSpeech = event.results[0][0].transcript.trim().toLowerCase();
+            romajiInput.value = textSpeech
+            validateSpokenAnswer(textSpeech)
+        };
     } else {
-      micBtn.disabled = true;
-      micBtn.textContent = "🎤";
-      micBtn.classList.add("bg-gray-600");
-      micBtn.classList.add("hover:bg-gray-700");
+        micBtn.disabled = true;
+        micBtn.textContent = "🎤";
+        micBtn.classList.add("bg-gray-600");
+        micBtn.classList.add("hover:bg-gray-700");
     }
 
 
     window.speechSynthesis.onvoiceschanged = () => {
-      speechSynthesis.getVoices();
+        speechSynthesis.getVoices();
     };
-    
+
     if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(reg => console.log("✅ Service Worker registered"))
-      .catch(err => console.error("❌ SW registration failed:", err));
-  }
-  </script>
+        navigator.serviceWorker.register('service-worker.js')
+            .then(reg => console.log("✅ Service Worker registered"))
+            .catch(err => console.error("❌ SW registration failed:", err));
+    }
+</script>
 </body>
 </html>
