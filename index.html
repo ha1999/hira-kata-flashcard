@@ -385,6 +385,7 @@
     micBtn.addEventListener("click", () => {
         if (recognition && !isRecognizing) {
             recognition.start();
+            romajiInput.value = ""
         }
     });
     let recognition;
