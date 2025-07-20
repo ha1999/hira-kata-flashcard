@@ -72,8 +72,19 @@
     </div>
 
     <!-- Input -->
+    <div class="flex justify-between">
     <input id="romajiInput" type="text" placeholder="Type Romaji (e.g. ka)"
-      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-xl hidden" />
+      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-center text-xl mr-2 hidden" />
+
+    <div class="flex items-center justify-center">
+      <button id="micBtn"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg flex items-center gap-2 hidden">
+        🎤 Speak
+      </button>
+      <div id="speechResult" class="text-xl font-medium text-gray-800"></div>
+    </div>
+
+    </div>
 
     <div id="feedback" class="text-lg font-semibold h-6"></div>
 
@@ -163,7 +174,6 @@
     let mode = 'hira';
 
     const flashcard = document.getElementById("flashcard");
-    const cardFront = document.getElementById("cardFront");
     const frontText = document.getElementById("frontText");
     const cardBack = document.getElementById("cardBack");
     const startBtn = document.getElementById("startBtn");
@@ -177,6 +187,8 @@
     const cardCounter = document.getElementById('cardCounter');
     const progressBar = document.getElementById('progressBar')
     const speakBtn = document.getElementById('speakBtn');
+    const micBtn = document.getElementById("micBtn");
+
 
     flashcard.addEventListener("click", () => {
       flashcard.classList.toggle("flipped");
@@ -223,6 +235,7 @@
       } else {
         speakBtn.classList.remove("hidden");
         cardCounter.classList.remove("hidden");
+        micBtn.classList.remove("hidden");
       }
 
       if (index > 0) {
@@ -321,6 +334,77 @@
       cardCounter.classList.add("hidden");
       modeBox.classList.remove("hidden");
     });
+
+
+
+    // speech recognize setting permission
+    function validateSpokenAnswer(userInput) {
+      const current = shuffledArray[index];
+      const isCorrect = userInput === current;
+
+      if (isCorrect) {
+        feedback.textContent = "✅ Correct!";
+        feedback.className = "text-green-600 font-bold";
+        setTimeout(() => {
+          if (index < shuffledArray.length - 1) {
+            index++;
+            showCard();
+          } else {
+            frontText.textContent = "🎉 Done!";
+            cardBack.textContent = "👏";
+            nextBtn.disabled = true;
+            replayBtn.classList.remove("hidden");
+            micBtn.classList.add("hidden");
+          }
+        }, 600);
+      } else {
+        feedback.textContent = `❌ Incorrect! Expected: ${current}`;
+        feedback.className = "text-red-600 font-bold";
+      }
+    }
+
+    micBtn.addEventListener("click", () => {
+      if (recognition && !isRecognizing) {
+        recognition.start();
+      }
+    });
+    let recognition;
+    let isRecognizing = false;
+
+    // Setup Web Speech API
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        isRecognizing = true;
+        micBtn.textContent = "🎙️ Listening...";
+      };
+
+      recognition.onend = () => {
+        isRecognizing = false;
+        micBtn.textContent = "🎤 Speak";
+      };
+
+      recognition.onerror = (event) => {
+        feedback.textContent = "❌ Speech error: " + event.error;
+        feedback.className = "text-red-600 font-bold";
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript.trim().toLowerCase();
+        document.getElementById("speechResult").textContent = transcript;
+        validateSpokenAnswer(transcript);
+      };
+    } else {
+      micBtn.disabled = true;
+      micBtn.textContent = "🎤";
+      micBtn.classList.add("bg-gray-600");
+      micBtn.classList.add("hover:bg-gray-700");
+    }
 
 
     window.speechSynthesis.onvoiceschanged = () => {
